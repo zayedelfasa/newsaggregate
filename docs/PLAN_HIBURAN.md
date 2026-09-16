@@ -1,7 +1,7 @@
 # PLAN_HIBURAN.md — Katalog Film TMDB
 
 > Branch: `dev`  
-> Status: **Planned**  
+> Status: **Implemented MVP**
 > Route utama: `/hiburan`  
 > Provider: **TMDB API**  
 > Scope awal: katalog film dan discovery; drakor/serial TV diabaikan dulu.
@@ -13,6 +13,8 @@ Membuat halaman hiburan mobile-first yang menampilkan film trending, film popule
 Fitur bukan layanan streaming. Aplikasi hanya menampilkan metadata film dan membuka sumber/trailer jika tersedia.
 
 ## 2. Scope MVP
+
+**Status implementasi:** `/hiburan` dan `/hiburan/movie/[id]` sudah aktif di branch `dev`. TMDB API menjadi provider film. Drakor/serial TV tetap di luar scope.
 
 ### Wajib
 

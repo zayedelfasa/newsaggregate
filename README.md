@@ -1,9 +1,9 @@
 # Portal Berita Indonesia
 
-Agregator berita lokal Indonesia — 11 media, 3 berita teratas per media + **Cuaca & Polusi (Open-Meteo)** + **Harian (Briefing/Gempa/Harga/Kalender/Bola 7 liga, no dummy)** + **Market ticker Saham & Crypto (hidden, no dummy)**.
+Agregator berita lokal Indonesia — 11 media, 3 berita teratas per media + **Cuaca & Polusi (Open-Meteo)** + **Harian (Gempa/Harga/Kalender/Bola 7 liga, no dummy)** + **Katalog Film Hiburan (TMDB)** + **Market read-only (hidden)**.
 Dibangun dengan **SvelteKit 2 (Svelte 5 runes) + Tailwind CSS v4**, deploy target **Vercel**.
 
-**4 Tab Aktif:** `📰 Berita` · `🌤️ Cuaca` · `📅 Harian` (briefing, gempa, harga, kalender, bola 7 liga + timeline + week view) · `ℹ️ Tentang`. Market `/market` tetap ada tapi **hidden dari BottomNav** (Yahoo 403, TwelveData terbatas, no dummy). Navigasi via **Bottom Tab** fixed `max-w-[420px]`.
+**4 Tab Aktif:** `📰 Berita` · `🌤️ Cuaca` · `📅 Harian` (gempa, harga, kalender, bola 7 liga) · `ℹ️ Tentang`. Ringkasan Pagi tampil di tab Berita. `/hiburan` diakses dari shortcut Berita, bukan tab kelima. Market `/market` tetap ada tapi **hidden dari BottomNav**. Navigasi via **Bottom Tab** fixed `max-w-[420px]`.
 
 ## Media Sumber
 

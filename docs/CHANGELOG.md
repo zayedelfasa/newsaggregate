@@ -9,8 +9,13 @@
 - Tambah `/hiburan` dengan search, filter section, genre chips, trending/popular/now-playing/upcoming rails, loading-safe empty/error state, dark mode, mobile-first.
 - Tambah `/hiburan/movie/[id]` detail poster/backdrop, rating, genre, runtime, overview, cast, trailer link, similar movies.
 - Tambah `MovieCard`, `MovieRail`, `MovieListItem`; header shortcut tunggal `🎬 Hiburan` tanpa ubah BottomNav 4 tab.
-- Attribution TMDB tampil di list/detail: `This product uses the TMDB API but is not endorsed or certified by TMDB.`
-- Validasi: `npm run check` 0 error/0 warning, `npm test` 9 pass, `npm run build` pass.
+- Header Back dari detail film kembali ke `/hiburan`; list/detail menyembunyikan MarketTicker crypto.
+- Label Genre/Jelajah dirapatkan; setiap rail punya `Lihat semua`.
+- Overview tampil sebagai `Deskripsi`; search card menampilkan tanggal rilis `DD/MM/YYYY`, genre, durasi, jumlah vote, overview, dan rating bintang kuning.
+- `Ringkasan Pagi` dipindahkan dari `/harian` ke tab Berita `/`.
+- Shortcut Hiburan hanya muncul sekali di tab Berita, di atas chip kategori.
+- Attribution TMDB di UI dihapus sesuai keputusan produk; source link TMDB tetap ada pada detail.
+- Validasi: `npm run check` 0 error/0 warning, `npm run build` pass.
 
 ## 2026-09-03 — Plan Baru `/hiburan`: Katalog Film TMDB
 
