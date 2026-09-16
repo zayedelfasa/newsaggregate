@@ -1,5 +1,14 @@
 # Changelog Pekerjaan Project
 
+## 2026-09-03 — Hiburan: Pagination, Detail, Widget Harian
+
+- Search `/hiburan?q=...` mendukung pagination `page=` + tombol `Muat halaman berikutnya`.
+- Search card menampilkan tanggal rilis, genre, durasi, jumlah vote, rating, dan overview.
+- Detail film menampilkan deskripsi/overview, tagline, status, bahasa asli, negara produksi, jumlah vote, cast, trailer, dan film serupa.
+- `/harian` tambah widget `Film Populer` dari TMDB dengan link `Lihat semua`.
+- TMDB gagal → widget hiburan disembunyikan; `/harian` tetap tidak crash.
+- Validasi: `npm run check` 0 error/0 warning, `npm run build` pass.
+
 ## 2026-09-03 — Eksekusi `/hiburan` Katalog Film TMDB
 
 - Tambah backend server-only `src/lib/server/hiburan.ts`: trending day/week, popular, now playing, upcoming, search, genre, detail, credits, videos, similar.

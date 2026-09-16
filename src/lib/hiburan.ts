@@ -11,6 +11,9 @@ export interface MovieItem {
 	overview: string | null;
 	status?: string | null;
 	runtime?: number | null;
+	originalLanguage?: string | null;
+	productionCountries?: string[];
+	tagline?: string | null;
 	sourceUrl: string;
 }
 

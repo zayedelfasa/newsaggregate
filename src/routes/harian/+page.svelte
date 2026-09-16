@@ -3,6 +3,7 @@
 	import GempaCard from '$lib/components/GempaCard.svelte';
 	import HargaCard from '$lib/components/HargaCard.svelte';
 	import KalenderBolaCard from '$lib/components/KalenderBolaCard.svelte';
+	import MovieCard from '$lib/components/MovieCard.svelte';
 
 	let { data } = $props();
 </script>
@@ -20,6 +21,13 @@
 	<GempaCard gempa={data.gempa} />
 
 	<HargaCard harga={data.harga} />
+
+	{#if data.movies?.length}
+		<section class="rounded-xl border border-gray-100 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
+			<div class="mb-2 flex items-center justify-between"><h2 class="text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-neutral-400">🎬 Film Populer</h2><a href="/hiburan" class="text-[10px] font-bold text-red-500">Lihat semua</a></div>
+			<div class="flex gap-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">{#each data.movies as movie (movie.id)}<MovieCard {movie} />{/each}</div>
+		</section>
+	{/if}
 
 	<KalenderBolaCard kalender={data.kalender} bola={data.bola} showCalendar={false} />
 

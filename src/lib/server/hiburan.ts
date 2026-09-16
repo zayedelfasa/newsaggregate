@@ -44,6 +44,9 @@ function normalizeMovie(raw: RawMovie): MovieItem {
 		overview: typeof raw.overview === 'string' && raw.overview ? raw.overview : null,
 		status: typeof raw.status === 'string' ? raw.status : null,
 		runtime: typeof raw.runtime === 'number' ? raw.runtime : null,
+		originalLanguage: typeof raw.original_language === 'string' ? raw.original_language : null,
+		productionCountries: Array.isArray(raw.production_countries) ? raw.production_countries.flatMap((c) => typeof c === 'object' && c && typeof (c as RawMovie).name === 'string' ? [(c as RawMovie).name as string] : []) : [],
+		tagline: typeof raw.tagline === 'string' && raw.tagline ? raw.tagline : null,
 		sourceUrl: `https://www.themoviedb.org/movie/${id}`
 	};
 }
@@ -77,7 +80,7 @@ export const fetchTrendingMovies = (period: 'day' | 'week') => listFn(`/trending
 export const fetchPopularMovies = () => listFn('/movie/popular', 'hiburan:popular', { language: 'id-ID', region: 'ID' });
 export const fetchNowPlayingMovies = () => listFn('/movie/now_playing', 'hiburan:now-playing', { language: 'id-ID', region: 'ID' });
 export const fetchUpcomingMovies = () => listFn('/movie/upcoming', 'hiburan:upcoming', { language: 'id-ID', region: 'ID' });
-export const searchMovies = (query: string) => listFn('/search/movie', `hiburan:search:${query.toLowerCase()}`, { query, language: 'id-ID', region: 'ID', include_adult: 'false' });
+export const searchMovies = (query: string, page = 1) => listFn('/search/movie', `hiburan:search:${query.toLowerCase()}:page:${page}`, { query, page: String(page), language: 'id-ID', region: 'ID', include_adult: 'false' });
 export const fetchMoviesByGenre = (id: number) => listFn('/discover/movie', `hiburan:genre:${id}`, { with_genres: String(id), language: 'id-ID', region: 'ID', sort_by: 'popularity.desc' });
 
 export async function fetchMovieGenres(): Promise<MovieGenre[]> {
