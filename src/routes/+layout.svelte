@@ -13,6 +13,7 @@
 	const isCuaca = $derived(page.url.pathname.startsWith('/cuaca'));
 	const isHarian = $derived(page.url.pathname.startsWith('/harian'));
 	const isTentang = $derived(page.url.pathname.startsWith('/tentang') || page.url.pathname.startsWith('/about'));
+	const isHiburan = $derived(page.url.pathname.startsWith('/hiburan'));
 
 	$effect(() => {
 		const t = setInterval(() => {
@@ -32,7 +33,7 @@
 <div class="flex min-h-screen justify-center bg-[#f3f4f6] dark:bg-neutral-950">
 	<div class="flex min-h-screen w-full max-w-[420px] flex-col bg-white shadow-sm dark:bg-neutral-900">
 		<Header />
-		{#if data?.market && !isCuaca && !isHarian && !isTentang}<MarketTicker data={data.market} />{/if}
+		{#if data?.market && !isCuaca && !isHarian && !isTentang && !isHiburan}<MarketTicker data={data.market} />{/if}
 		<main class="flex-1 pb-[calc(56px+env(safe-area-inset-bottom))]">{@render children()}</main>
 		{#if !isCuaca && !isHarian && !isTentang}<Footer />{/if}
 		<BottomNav />

@@ -17,10 +17,6 @@
 
 	<KalenderBolaCard kalender={data.kalender} bola={null} showScore={false} />
 
-	{#if data.briefing}
-		<BriefingCard items={data.briefing.items} />
-	{/if}
-
 	<GempaCard gempa={data.gempa} />
 
 	<HargaCard harga={data.harga} />

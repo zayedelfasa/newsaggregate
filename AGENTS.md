@@ -8,7 +8,7 @@
 Portal **agregator berita + market + cuaca** lokal Indonesia. Mobile-first `max-w-[420px]` (mirip app native), deploy **Vercel**.
 - **11 media**: Detik, CNN Indonesia, Antara, CNBC Indonesia, Tempo, Republika, Okezone, Kumparan, JPNN, Media Indonesia, iNews (3 berita teratas/media).
 - **Fitur Harian — PRIORITAS #1**: Daily Briefing, Gempa BMKG, Harga Harian (Logam PAXG+KAG + Tren Sembako 7d + BBM&LPG), Kalender Hijriah + Hari Penting Per Bulan, Skor Bola (7 liga: Liga 1 + EPL/LaLiga/SerieA/Bundesliga/Ligue1/UCL). Sholat dihapus 2026-08-29. Ikuti `docs/PLAN_FITUR_HARIAN.md` + `docs/PLAN_HARGA_TRENDS.md`.
-- **Fitur Wanita — PRIORITAS #2**: Resep, Kalender Haid private/localStorage, Drakor/Hiburan. Ikuti `docs/PLAN_FITUR_WANITA.md`.
+- **Fitur Wanita — sebagian DITUNDA**: Resep Harian dan Kalender Haid tidak dikembangkan saat ini. Katalog film `/hiburan` via **TMDB API** tercatat di `docs/PLAN_HIBURAN.md`. Drakor/serial TV diabaikan dulu. TVMaze/Kitsu tidak digunakan.
 - **Cuaca — DONE**: Suhu + forecast 7 hari + per jam + polusi AQI/PM2.5 via **Open-Meteo** gratis tanpa key.
 - **Market — PRIORITAS #3**: Fokus TradingView widget/embed read-only. Jangan kembangkan provider custom Yahoo/TwelveData/IDX atau data market dummy. Ikuti `docs/PLAN_MARKET_TRADINGVIEW.md`.
 - **3 tab aktif** via BottomNav → **4 tab sejak 2026-08-31**: `Berita /` · `Cuaca /cuaca` · `Harian /harian` (Fitur Harian: briefing+gempa+harga+kalender+bola) · `Tentang /tentang`.
@@ -84,7 +84,8 @@ git push vercel dev:main
 │   ├── CHANGELOG.md                  # log lintas fitur (single source)
 │   ├── PLAN_CUACA.md                 # tab Cuaca & Polusi (Open-Meteo) — DONE
 │   ├── PLAN_FITUR_HARIAN.md          # daily habit umum — baca
-│   ├── PLAN_FITUR_WANITA.md          # Resep, Kalender Haid, Drakor/Hiburan — baca
+││   ├── PLAN_FITUR_WANITA.md          # Resep, Kalender Haid — baca jika scope dipilih
+│   ├── PLAN_HIBURAN.md               # Katalog film TMDB `/hiburan` — baca sebelum implementasi
 │   ├── PLAN_HARGA_TRENDS.md          # pivot Harga: hapus pangan.go.id + tren 7d + perak+LPG — DONE 2026-09-01
 │   └── PLAN_MARKET_TRADINGVIEW.md    # Market TradingView read-only — baca
 ├── package.json, vite.config.ts, svelte.config.js
@@ -254,7 +255,7 @@ interface KalenderData { gregorianLabel, hijriLabel, holiday, hariBulan: {date,n
 
 **Status prioritas eksekusi:**
 1. **Fitur Harian** — ✅ SELESAI 5/5 via tab `/harian` (2026-09-01 extended): Briefing ✅ + Gempa ✅ + Harga pivot Logam+Tren+BBM ✅ + Kalender + Hari Penting per bulan ✅ + Bola 7 liga ✅. Lanjut optional: PWA notif. Lihat `docs/PLAN_FITUR_HARIAN.md` §13 + `docs/PLAN_HARGA_TRENDS.md`.
-2. **Fitur Wanita** — Resep → Kalender Haid private/localStorage → Drakor/Hiburan. Baca `docs/PLAN_FITUR_WANITA.md` sebelum implementasi.
+2. **Fitur Wanita** — ⏸ DITUNDA. Resep Harian ditunda karena API Bahasa Indonesia tidak stabil dan TheMealDB dominan Bahasa Inggris. Kalender Haid juga ditunda; jangan implementasi tanpa keputusan baru.
 3. **Market TradingView** — widget/embed read-only saja. Baca `docs/PLAN_MARKET_TRADINGVIEW.md`. Jangan kembali ke Yahoo/TwelveData/custom market fetch.
 
 Market custom lama tetap route legacy sampai migrasi TradingView selesai. No dummy.

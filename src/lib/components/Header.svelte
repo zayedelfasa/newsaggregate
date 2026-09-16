@@ -18,6 +18,8 @@
 		else if (p.startsWith('/cuaca')) goto('/cuaca');
 		else if (p.startsWith('/tentang') || p.startsWith('/about')) goto('/tentang');
 		else if (p.startsWith('/market')) goto('/market');
+		else if (p.startsWith('/hiburan/movie/')) goto('/hiburan');
+		else if (p.startsWith('/hiburan')) goto('/');
 		else goto('/');
 	}
 

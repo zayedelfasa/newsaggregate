@@ -1,9 +1,9 @@
 # PLAN_FITUR_WANITA.md — Fitur Harian untuk Audiens Wanita
 
 > Branch `dev` — 2026-08-27
-> Status: **Planned** — belum dikerjakan (acuan dev selanjutnya)
+> Status: **Ditunda** — Resep Harian dan Kalender Haid tidak masuk development saat ini. Dokumen ini menjadi arsip keputusan, bukan instruksi eksekusi.
 > Referensi: `AGENTS.md`, `ARCHITECTURE.md`, `PLAN_FITUR_HARIAN.md` §6 (Skor Bola), `PLAN_CUACA.md`
-> Goal: **imbangin Poin 6 Skor Bola (cowok 18-40)** dengan fitur habit harian untuk **wanita/ibu rumah tangga** — retention harian cewek, tetap gratis tanpa API key, mobile-first `max-w-[420px]`.
+> Goal: **imbangin Poin 6 Skor Bola (cowok 18-40)** dengan fitur habit harian untuk **wanita/ibu rumah tangga** — retention harian cewek, memakai API gratis sesuai ketentuan, mobile-first `max-w-[420px]`.
 > Prinsip: sama dengan `AGENTS.md` §8 — server-only fetch, `cached()` + `s-maxage=600`, `Promise.allSettled`, Svelte 5 runes, no dummy, no paid key.
 
 ## 1. Ringkasan & Kenapa Butuh
@@ -21,18 +21,18 @@
 | Opsi | Fitur | API Free (live test) | Effort | Retention cewek | Catatan |
 |---|---|---|---|---|---|
 | **A** | **Resep Harian — Ide Masak Hari Ini** | `themealdb.com` ✅ `200 OK` tanpa key (key `1`) | Kecil 0.5 hari | ⭐⭐⭐⭐⭐ | Ibu cek tiap pagi/sore, habit terkuat cewek |
-| **B** | **Jadwal Drakor / Hiburan** | `api.tvmaze.com` ✅ `200 OK` tanpa key / `kitsu.io` ✅ ; `api.themoviedb.org` ❌ `401` butuh key | Kecil 0.5 hari | ⭐⭐⭐⭐ | Cewek 18-35 FOMO drakor |
+| **B** | **Drakor / Film Hollywood** | **TMDB API** ✅ API key/token gratis sesuai ketentuan | Sedang 1-2 hari | ⭐⭐⭐⭐ | Drakor + film dalam satu katalog hiburan |
 | **C** | **Kalender Haid + Tips Harian** | Tanpa API ✅ localStorage | Kecil 0.5 hari | ⭐⭐⭐⭐⭐ | Private, no quota, cek tiap hari |
 
-**Rekomen:** **A dulu** (Resep) → **C** (Haid) → **B via TVMaze** (Drakor). Bola tetap ada untuk cowok, wanita dapat A/C sebagai imbang. Opsi Harian 1 tab bisa tampung semua.
+**Keputusan 2026-09-03:** Resep Harian dan Kalender Haid **ditunda**. Resep tidak cocok saat ini karena API Bahasa Indonesia tidak stabil, sedangkan TheMealDB dominan Bahasa Inggris. Kalender Haid juga tidak dikembangkan sekarang karena belum masuk prioritas eksekusi. Jangan mulai implementasi tanpa keputusan baru.
 
-> Verifikasi live 2026-08-27: `GET themealdb.com/api/json/v1/1/random.php → 200 {meals:[...]}` ; `GET api.tvmaze.com/search/shows?q=korean → 200 [A Korean Odyssey ...]` ; `GET api.themoviedb.org/3/tv/on_the_air → 401` (butuh key, skip) ; `GET kitsu.io/api/edge/anime → 200`.
+> Keputusan baru: gunakan **TMDB API** sebagai provider hiburan utama. TVMaze, Kitsu, Jikan, dan API hiburan lain tidak digunakan. Credential TMDB wajib disimpan server-only lewat environment variable.
 
 **Tunda:** Horoskop/Quotes (retention rendah), Skincare scrape (CORS berat), Marketplace promo (butuh affiliate key).
 
 ---
 
-## 2. Opsi A — Resep Harian (Ide Masak Hari Ini) ⭐ Prioritas 1
+## 2. Opsi A — Resep Harian (Ide Masak Hari Ini) ⏸ Ditunda
 
 ### API Gratis (verified)
 
@@ -102,43 +102,51 @@ npm run check && npm run build
 
 ---
 
-## 3. Opsi B — Jadwal Drakor / Hiburan (Pengganti Bola untuk Cewek) ⭐ Prioritas 2
+## 3. Opsi B — Drakor + Film Hollywood via TMDB ⭐ Prioritas 2
 
-### API Gratis (verified — tanpa key)
+### API TMDB (API key/token wajib; API tidak berbayar sesuai ketentuan)
 
 | API | Endpoint | Key | Limit | Test |
 |---|---|---|---|---|
-| **TVMaze** (rekom) | `https://api.tvmaze.com/search/shows?q=korean` , `.../shows/:id` , `.../schedule?country=KR&date=2026-08-27` | Tanpa | Unlimited | ✅ 200 OK |
-| **Kitsu** (alt anime) | `https://kitsu.io/api/edge/anime?filter[status]=current&page[limit]=5` | Tanpa | Rate limit longgar | ✅ 200 OK |
-| Jikan (MyAnimeList) | `https://api.jikan.moe/v4/top/anime` | Tanpa | 3 req/s | ⚠️ 504 kadang, retry |
-| **TMDB** | `https://api.themoviedb.org/3/tv/on_the_air` | **Butuh key** | — | ❌ 401 — jangan pakai (langgar no-key) |
+| **TMDB** | `/3/discover/tv` + `/3/discover/movie` + `/3/search/tv` + `/3/search/movie` + detail endpoint | **API key/token** | Mengikuti limit/kebijakan TMDB | ✅ provider utama |
 
-> Keputusan: **pakai TVMaze primary**, Kitsu fallback. TMDB skip meski data bagus karena butuh `Bearer` key (biaya daftar + simpan secret, tidak sejalan `AGENTS.md` §7 `Jangan hardcode API key`).
-
-Response TVMaze: `[{show:{id, name, language:Korean, genres:[Drama,Romance], rating:{average}, image:{medium,original}, summary, schedule:{time,days}, network:{name}}}]`
+> Keputusan: **pakai TMDB sebagai provider utama untuk drakor dan film Hollywood**. Tidak ada fallback TVMaze/Kitsu. Jika TMDB gagal, gunakan stale cache lalu empty-state jujur.
+>
+> Environment variable: `TMDB_API_KEY` atau `TMDB_API_TOKEN`. Credential hanya boleh diakses dari server-side code.
+>
+> Filter drakor: `with_origin_country=KR` + `with_original_language=ko`. Film Hollywood memakai discover/search movie TMDB.
+>
+> Poster: `https://image.tmdb.org/t/p/w500{poster_path}`. Jika `poster_path` null, tampilkan placeholder UI tanpa dummy image.
 
 ### Arsitektur
 
 ```
-+page.server.ts → cached('drakor:today:{date}', 1j) → TVMaze schedule?country=KR
-              → filter language=Korean + genre Drama/Romance → top 5
-              → Kitsu fallback jika 0 hasil
-              → Promise.allSettled
++page.server.ts → Promise.allSettled
+              ├─ cached('hiburan:drakor:{page}', 1j)
+              │  → TMDB /3/discover/tv?with_origin_country=KR&with_original_language=ko
+              ├─ cached('hiburan:movie:popular', 1j)
+              │  → TMDB /3/trending/movie/week atau /3/movie/popular
+              ├─ cached('hiburan:search:{type}:{q}', 1j)
+              │  → TMDB /3/search/tv atau /3/search/movie
+              └─ cached('hiburan:detail:{type}:{id}', 6j)
+                 → TMDB /3/tv/{id} atau /3/movie/{id}
 ```
 
-Cache keys: `drakor:today:{date}` TTL 1 jam, `drakor:search:{q}` TTL 1 jam, `hiburan:detail:{id}` TTL 6 jam.
+Credential TMDB tidak boleh dikirim ke client. Semua request memakai `fetchWithTimeout(7000)` + `cached()`. Jika upstream gagal, baca stale cache maksimal 24 jam lalu tampilkan empty-state.
 
 ### UI
 
-- **Home widget:** Card `🎬 Drakor Malam Ini — 2 tayang` horizontal scroll
+- **Home widget `/harian`:** Card `🎬 Hiburan Pilihan` horizontal scroll.
   ```
-  [poster] A Korean Odyssey • tvN • 21:00 Sat,Sun • ⭐6.8
-  [poster] Jewel in Palace • MBC • Ended
+  [poster] Queen of Tears • ⭐8.6 • Returning Series
+  [poster] Dune: Part Two • ⭐8.6 • 2024
   ```
-- **Halaman `/hiburan` atau `/drakor`:**
-  - Search `?q=` → TVMaze search
-  - List 10 drakor today + badge `On Air` / `Ended`
-  - Detail → summary + jadwal + link `TVMaze`
+- **Halaman `/hiburan`:**
+  - Tab `Drakor` dan `Film Hollywood`.
+  - Search `?type=drakor&q=...` atau `?type=movie&q=...`.
+  - List poster, rating, tahun, genre, status.
+  - Detail `/hiburan/{type}/{id}`.
+  - Jadwal hanya ditampilkan jika TMDB menyediakan episode/air-date; jangan hardcode jadwal.
 
 ### File
 
@@ -150,7 +158,7 @@ Cache keys: `drakor:today:{date}` TTL 1 jam, `drakor:search:{q}` TTL 1 jam, `hib
 
 ---
 
-## 4. Opsi C — Kalender Haid + Tips Harian (Private, Tanpa API) ⭐ Prioritas 1 untuk cewek
+## 4. Opsi C — Kalender Haid + Tips Harian (Private, Tanpa API) ⏸ Ditunda
 
 ### API: Tidak ada — 100% local
 
@@ -214,22 +222,22 @@ Home stack: Sholat → Briefing → Gempa banner → 🍳 Resep → 🩷 Haid �
 (Gempa & Resep/Haid sebagai widget home, bukan tab — iterasi Phase 1)
 ```
 
-**Rekomen Phase 1:** Opsi Alternatif (widget home) dulu — validasi retention cewek via Resep klik rate. Jika >15% klik, pecah jadi tab `/harian` Phase 2.
+**Status:** Rekomendasi widget home dan validasi retention **ditunda**. Tidak ada integrasi Resep atau Haid ke `/harian` saat ini.
 
 > Market tetap hidden dari nav (2026-08-27), route `/market` tetap ada.
 
 ---
 
-## 6. Roadmap Eksekusi (Urut untuk Wanita)
+## 6. Roadmap Arsip — Tidak Dieksekusi Saat Ini
 
 | Urutan | Fitur | Estimasi | Deliverable | Cache |
 |---|---|---|---|---|
-| 1 | **A Resep Harian** | 0.5 hari | `/resep` + `ResepCard` home + acak + simpan | `resep:harian:{date}` 6j |
-| 2 | **C Haid** | 0.5 hari | `/haid` + `HaidCard` + localStorage + kalender | local only |
-| 3 | **B Drakor via TVMaze** | 0.5 hari | `/hiburan` + `DrakorCard` + search | `drakor:today:{date}` 1j |
-| 4 | Integrasi `/harian` tab (jika widget sukses) | 0.5 hari | Tab baru + BottomNav 4 tab | — |
+| 1 | **A Resep Harian** | Ditunda | Tidak ada implementasi | API Indonesia belum stabil; TheMealDB dominan Inggris |
+| 2 | **C Haid** | Ditunda | Tidak ada implementasi | Belum masuk prioritas |
+| 3 | **B Drakor + Film via TMDB** | Planned terpisah | Belum dibuat | TMDB key/token server-only |
+| 4 | Integrasi `/harian` tab | Ditunda | Tidak ada implementasi | Menunggu keputusan fitur |
 
-**Total 2 hari** untuk A+B+C. Mulai **A Resep** karena effort kecil + retention cewek tertinggi + API sudah verified.
+**Total estimasi tidak berlaku.** Seluruh roadmap wanita berstatus arsip sampai ada keputusan eksekusi baru.
 
 Setelah ini gabung ke `PLAN_FITUR_HARIAN.md` §8 (roadmap) dan `AGENTS.md` §9 Next.
 
@@ -242,7 +250,7 @@ Browser → Vercel CDN (s-maxage=600) → SvelteKit Server (Promise.allSettled)
                                               ├─ sources/* → cached('rss:{id}') TTL 10m → RSS
                                               ├─ weather.ts → cached('weather:*') TTL 10m → Open-Meteo
                                               ├─ resep.ts → cached('resep:*') TTL 6j → TheMealDB (A)
-                                              ├─ hiburan.ts → cached('drakor:*') TTL 1j → TVMaze/Kitsu (B)
+                                              ├─ hiburan.ts → cached('hiburan:*') TTL 1j/6j → TMDB (B)
                                               └─ haid: client only → localStorage (C) — no server fetch
 ```
 
@@ -272,7 +280,7 @@ Checklist no-dummy (`DOC_JANGAN_GUNAKAN_DUMMY.md`):
 | Risiko | Mitigasi |
 |---|---|
 | TheMealDB `a=Indonesian` null / 500 | Pakai random + `c=Seafood` fallback, `Promise.allSettled` → card `Tidak tersedia` |
-| TVMaze 5xx / 0 hasil Korean | Fallback Kitsu `anime?filter[status]=current`, cache stale 24j, empty `Jadwal belum tersedia` |
+| TMDB 5xx/401/429 atau 0 hasil | Validasi credential → stale cache 24j → empty `Data hiburan belum tersedia`; jangan fallback ke provider lain |
 | Haid data sensitif | 100% localStorage, disclaimer medis, no analytics, no server log |
 | BottomNav sesak 5 tab | Tetap 4 tab max, Harian sebagai 1 tab koleksi atau widget |
 | Gambar resep berat | `loading=lazy` + `preview/medium` thumb, CDN cache |
@@ -282,10 +290,10 @@ Checklist no-dummy (`DOC_JANGAN_GUNAKAN_DUMMY.md`):
 ## 10. Referensi API (verified 2026-08-27)
 
 - TheMealDB: `https://www.themealdb.com/api.php` — random `.../api/json/v1/1/random.php` (key `1`), filter `.../filter.php?c=Seafood`, list `.../list.php?c=list`
-- TVMaze: `https://www.tvmaze.com/api` — search `.../search/shows?q=korean`, schedule `.../schedule?country=KR&date=...`
-- Kitsu: `https://kitsu.docs.apiary.io` — `.../api/edge/anime?filter[status]=current`
-- Jikan (fallback): `https://docs.api.jikan.moe` — rate 3 req/s
-- TMDB (skip): `https://developer.themoviedb.org` — butuh `Authorization: Bearer` key, tidak dipakai
+- TMDB API: `https://developer.themoviedb.org/docs` — endpoint discover/search/detail movie + TV
+- TMDB authentication: `https://developer.themoviedb.org/docs/authentication-application` — API key V3 atau API Read Access Token V4
+- TMDB images: `https://image.tmdb.org/t/p/w500` dan `w1280`
+- Attribution: `This product uses the TMDB API but is not endorsed or certified by TMDB.`
 
 ---
 
@@ -293,9 +301,9 @@ Checklist no-dummy (`DOC_JANGAN_GUNAKAN_DUMMY.md`):
 
 | Fitur | Status | File Kunci | API |
 |---|---|---|---|
-| A Resep Harian | ⏳ Planned | `resep.ts`, `ResepCard.svelte`, `routes/resep/` | TheMealDB free tanpa daftar |
-| B Drakor/Hiburan | ⏳ Planned | `hiburan.ts`, `DrakorCard.svelte`, `routes/hiburan/` | TVMaze free tanpa key |
-| C Kalender Haid | ⏳ Planned | `haid.svelte.ts`, `HaidCard.svelte`, `routes/haid/` | Tanpa API (local) |
+| A Resep Harian | ⏸ Ditunda | Belum dibuat | API Indonesia tidak stabil; TheMealDB dominan Inggris |
+| B Drakor/Hiburan | ⏳ Planned | `hiburan.ts`, `DrakorCard.svelte`, `routes/hiburan/` | TMDB API key/token server-only |
+| C Kalender Haid | ⏸ Ditunda | Belum dibuat | Belum masuk prioritas |
 
-> Update ⏳→✅ tiap selesai 1 fitur. Setelah A selesai, update `CHANGELOG.md` + `AGENTS.md` §9.
+> Status diperbarui hanya setelah ada keputusan eksekusi baru. Drakor/Hiburan siap masuk development memakai TMDB; Resep Harian dan Kalender Haid tetap ditunda.
 

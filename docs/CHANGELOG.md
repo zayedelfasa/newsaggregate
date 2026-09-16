@@ -1,5 +1,40 @@
 # Changelog Pekerjaan Project
 
+## 2026-09-03 — Eksekusi `/hiburan` Katalog Film TMDB
+
+- Tambah backend server-only `src/lib/server/hiburan.ts`: trending day/week, popular, now playing, upcoming, search, genre, detail, credits, videos, similar.
+- Credential hanya via `TMDB_API_KEY` atau `TMDB_API_TOKEN` (`$env/dynamic/private`); tanpa credential tampil error-state jujur, tanpa data dummy.
+- Tambah cache TMDB: list/search/genre 1j, genre list 24j, detail 6j; `cached()` fallback stale instance.
+- Tambah shared types `src/lib/hiburan.ts` + normalisasi poster/rating/tanggal/overview.
+- Tambah `/hiburan` dengan search, filter section, genre chips, trending/popular/now-playing/upcoming rails, loading-safe empty/error state, dark mode, mobile-first.
+- Tambah `/hiburan/movie/[id]` detail poster/backdrop, rating, genre, runtime, overview, cast, trailer link, similar movies.
+- Tambah `MovieCard`, `MovieRail`, `MovieListItem`; header shortcut tunggal `🎬 Hiburan` tanpa ubah BottomNav 4 tab.
+- Attribution TMDB tampil di list/detail: `This product uses the TMDB API but is not endorsed or certified by TMDB.`
+- Validasi: `npm run check` 0 error/0 warning, `npm test` 9 pass, `npm run build` pass.
+
+## 2026-09-03 — Plan Baru `/hiburan`: Katalog Film TMDB
+
+- Tambah `docs/PLAN_HIBURAN.md` sebagai plan khusus halaman `/hiburan`.
+- Scope diubah: fokus katalog film TMDB; drakor/serial TV diabaikan dulu.
+- Konten rencana: trending, film populer, sedang tayang, upcoming, trailer, genre, search, detail.
+- Integrasi Berita: satu shortcut `Hiburan → /hiburan` di header; tidak ada duplikasi card hiburan di bawah feed berita.
+- BottomNav tetap 4 tab: `Berita | Cuaca | Harian | Tentang`.
+- Detail rencana: cache, env TMDB server-only, normalisasi, error-state, route, komponen, verifikasi.
+
+## 2026-09-03 — Keputusan Provider Hiburan: TMDB
+
+- Provider hiburan ditetapkan **TMDB API** sebagai sumber utama.
+- TVMaze, Kitsu, Jikan, dan provider hiburan lain tidak digunakan.
+- TMDB dipakai untuk katalog drakor/serial Korea dan film Hollywood.
+- Filter drakor: `with_origin_country=KR` + `with_original_language=ko`.
+- Endpoint rencana: discover, search, detail, credits, season/episode.
+- Credential memakai `TMDB_API_KEY` atau `TMDB_API_TOKEN`, server-only via environment variable.
+- Poster memakai TMDB image CDN; `poster_path` null → placeholder UI, tanpa dummy image.
+- Cache rencana: list/search 1 jam, detail 6 jam, stale fallback maksimal 24 jam.
+- Jadwal hanya ditampilkan jika TMDB menyediakan air-date/episode; tidak boleh hardcode.
+- Wajib attribution: `This product uses the TMDB API but is not endorsed or certified by TMDB.`
+- Tidak ada implementasi kode pada perubahan ini; dokumentasi `docs/PLAN_FITUR_WANITA.md` diperbarui.
+
 Dokumen ini mencatat pekerjaan terakhir lintas fitur agar perubahan dapat dicek ulang.
 
 ## 2026-01-05 — Phase 1 Market: Detail Symbol, Gainer/Loser, Kalkulator, Auto-Tag
@@ -403,6 +438,22 @@ Branch kerja: `dev` — lanjut PLAN_HARGA_TRENDS Phase 2 + Kalender per bulan
 - `AGENTS.md` §1/4/5/6/7/9/12 update harga pivot + trends + hari penting + header back
 - `README.md` harian + `ARCHITECTURE.md` sync
 - `DOC_JANGAN_GUNAKAN_DUMMY` §6 tren fallback
+
+## 2026-09-03 — Fitur Wanita Ditunda
+
+- Resep Harian ditunda: API resep Bahasa Indonesia yang tersedia tidak cukup stabil; TheMealDB dominan Bahasa Inggris dan tidak memenuhi kebutuhan lokal.
+- Kalender Haid ditunda: konsep private/localStorage tetap terdokumentasi, tetapi tidak masuk development saat ini.
+- Drakor/Hiburan tidak diubah statusnya oleh keputusan ini.
+- Tidak ada kode fitur wanita yang dibuat atau diubah.
+- `docs/PLAN_FITUR_WANITA.md` diubah menjadi arsip keputusan; implementasi memerlukan keputusan baru.
+
+### Status
+
+| Fitur | Status | Alasan |
+|---|---|---|
+| Resep Harian | ⏸ Ditunda | API Indonesia tidak stabil; TheMealDB dominan Inggris |
+| Kalender Haid | ⏸ Ditunda | Belum masuk prioritas development |
+| Drakor/Hiburan | ⏳ Planned | Tidak termasuk perubahan ini |
 
 ## Catatan Verifikasi Manual
 
